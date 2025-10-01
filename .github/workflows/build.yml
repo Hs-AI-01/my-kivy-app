@@ -6,10 +6,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       
     - name: Setup Python
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: '3.9'
         
@@ -19,12 +19,25 @@ jobs:
         sudo apt install -y python3-pip git zip unzip openjdk-17-jdk autoconf automake libtool pkg-config
         pip3 install buildozer cython pillow
         
+    - name: Initialize Buildozer
+      run: |
+        buildozer init
+        ls -la
+        cat buildozer.spec
+        
+    - name: Accept Android Licenses
+      run: |
+        yes | sdkmanager --licenses || true
+        mkdir -p ~/.android
+        touch ~/.android/repositories.cfg
+        
     - name: Build APK
       run: |
         buildozer android debug
+        ls -la bin/
         
     - name: Upload APK
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: my-app-apk
         path: bin/*.apk
